@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace CMS.Mods {
 	public class ModLoader {
@@ -19,10 +20,12 @@ namespace CMS.Mods {
 			GetModsDirectory();
 			BuildModsList();
 			ActivateMods();
+			RegisterEvents();
 		}
 
 		~ModLoader() {
 			UnloadMods();
+			UnregisterEvents();
 		}
 
 		private void UnloadMods() {
@@ -98,6 +101,37 @@ namespace CMS.Mods {
 				if (mod != null) 
 					mod.Activate();
 			}
+		}
+
+		private void RegisterEvents() {
+			SceneManager.sceneLoaded += SceneManagerOnSceneLoaded;
+		}
+
+		private void UnregisterEvents() {
+			SceneManager.sceneLoaded -= SceneManagerOnSceneLoaded;
+		}
+		
+		private void SceneManagerOnSceneLoaded(Scene scene, LoadSceneMode mode) {
+			if (scene.name == "Menu") {
+				var mainMenuManager = GameObject.FindObjectOfType<MainMenuManager>();
+				if (mainMenuManager != null) {
+					var ui = mainMenuManager.gameObject.AddComponent<UI>();
+					ui.DrawUI = new UI.DrawUIEvent();
+					ui.DrawUI.AddListener(DrawModsInfo);
+				}
+			}
+		}
+
+		private void DrawModsInfo() {
+			var style = new GUIStyle {
+				normal = {
+					textColor = Color.red
+				},
+				fontSize = 16
+			};
+			GUILayout.Label("Mod Loader v0.1a by Sauler", style, GUILayout.ExpandHeight(true), GUILayout.ExpandWidth(true));
+			style.fontSize = 13;
+			GUILayout.Label("Loaded mods: " + mods.Length, style, GUILayout.ExpandHeight(true), GUILayout.ExpandWidth(true));
 		}
 	}
 }
