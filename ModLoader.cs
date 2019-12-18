@@ -13,10 +13,12 @@ namespace CMS.Mods {
 		private static ModLoader instance;
 		private int currentModIndex;
 		private Mod[] mods;
+		public int LoadedModsCount;
 		
 		private ModLoader() {
 			Logger.RemoveLogFile(LogFile);
-			
+
+			LoadedModsCount = 0;
 			GetModsDirectory();
 			BuildModsList();
 			ActivateMods();
@@ -34,27 +36,31 @@ namespace CMS.Mods {
 			
 			for (var i = 0; i < mods.Length; i++) {
 				var mod = mods[i];
-				if (mod != null) 
+				if (mod != null) {
 					mod.Deactivate();
+					LoadedModsCount--;
+				}
 			}
 		}
 
+		public Mod[] GetLoadedMods() {
+			return mods;
+		}
+
 		private void GetModsDirectory() {
-			modsDirectory = Application.dataPath + "/../Mods";
-			Logger.Log("Mods directory: " + modsDirectory, LogFile, true);
+			modsDirectory = $"{Application.dataPath}/../Mods";
 		}
 		
 		private void BuildModsList() {
 			if (!Directory.Exists(modsDirectory)) {
 				haveAnyModsToLoad = false;
-				Logger.Log("Mods directory does not exists!", LogFile, true);
+				Directory.CreateDirectory(modsDirectory);
 				return;
 			}
 
 			var files = Directory.GetFiles(modsDirectory, "*.dll");
 			if (files.Length == 0) {
 				haveAnyModsToLoad = false;
-				Logger.Log("No mods found in mods directory!", LogFile, true);
 				return;
 			}
 
@@ -98,8 +104,10 @@ namespace CMS.Mods {
 
 			for (var i = 0; i < mods.Length; i++) {
 				var mod = mods[i];
-				if (mod != null) 
+				if (mod != null) {
 					mod.Activate();
+					LoadedModsCount++;
+				}
 			}
 		}
 
@@ -119,6 +127,8 @@ namespace CMS.Mods {
 					ui.DrawUI = new UI.DrawUIEvent();
 					ui.DrawUI.AddListener(DrawModsInfo);
 				}
+				
+				var modList = new GameObject("ModList").AddComponent<ModList>();
 			}
 		}
 
