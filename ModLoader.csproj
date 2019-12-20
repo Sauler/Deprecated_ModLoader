@@ -54,6 +54,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="API\MainMenu\MainMenuCustomizer.cs" />
+    <Compile Include="API\MainMenu\MainMenuCategory.cs" />
+    <Compile Include="API\MainMenu\MainMenuOption.cs" />
     <Compile Include="Mod.cs" />
     <Compile Include="ModInfo.cs" />
     <Compile Include="ModList.cs" />
