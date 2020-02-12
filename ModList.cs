@@ -1,22 +1,13 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using CMS.Mods.API.MainMenu;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+
 namespace CMS.Mods {
 	internal class ModList : MonoBehaviour {
-	
 		public void Awake() {
-			DontDestroyOnLoad(gameObject);
-			SceneManager.activeSceneChanged += SceneManager_activeSceneChanged;
 			Init();
 		}
-		
-		private void SceneManager_activeSceneChanged(Scene from, Scene to) {
-			if (to.name == "SceneLoader") 
-				Destroy(gameObject);
-		}
-		
+
 		public void Init() {
 			CreateMainMenuCategory();
 		}

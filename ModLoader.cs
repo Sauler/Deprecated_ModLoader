@@ -128,7 +128,7 @@ namespace CMS.Mods {
 					ui.DrawUI.AddListener(DrawModsInfo);
 				}
 				
-				var modList = new GameObject("ModList").AddComponent<ModList>();
+				new GameObject("ModList").AddComponent<ModList>();
 			}
 		}
 
