@@ -133,6 +133,9 @@ namespace CMS.Mods.API.MainMenu {
 			newButton.name = name;
 			newButton.SetSiblingIndex(2);
 			newButton.GetComponentInChildren<Text>().text = name;
+			var textLocalize = newButton.GetComponentInChildren<TextLocalize>();
+			if (textLocalize != null)
+				Object.Destroy(textLocalize);
 			var buttonComponent = newButton.GetComponent<Button>();
 			buttonComponent.onClick = new Button.ButtonClickedEvent();
 			buttonComponent.onClick.AddListener(delegate{OnModsButtonClick(name);});
