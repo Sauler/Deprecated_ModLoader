@@ -1,13 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using CMS.Mods.Modules;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace CMS.Mods {
 	public class ModLoader {
-		private const string LogFile = "ModLoader.txt";
-		
 		private string modsDirectory;
 		private bool haveAnyModsToLoad;
 		private static ModLoader instance;
@@ -16,7 +15,7 @@ namespace CMS.Mods {
 		public int LoadedModsCount;
 		
 		private ModLoader() {
-			Logger.RemoveLogFile(LogFile);
+			Logger.RemoveLogFile(Constants.LogFile);
 
 			LoadedModsCount = 0;
 			GetModsDirectory();
@@ -68,7 +67,7 @@ namespace CMS.Mods {
 			currentModIndex = 0;
 			mods = new Mod[files.Length];
 			
-			Logger.Log("Found " + files.Length + " mods", LogFile, true);
+			Logger.Log("Found " + files.Length + " mods", Constants.LogFile, true);
 			
 			for (var i = 0; i < files.Length; i++) {
 				var types = Assembly.LoadFile(files[i]).GetTypes();
@@ -92,7 +91,7 @@ namespace CMS.Mods {
 					
 					mods[currentModIndex] = mod;
 					currentModIndex++;
-					Logger.Log("Mod name: " + mod.GetInfo().Name, LogFile, true);
+					Logger.Log("Mod name: " + mod.GetInfo().Name, Constants.LogFile, true);
 					return;
 				}
 			}
@@ -121,27 +120,10 @@ namespace CMS.Mods {
 		
 		private void SceneManagerOnSceneLoaded(Scene scene, LoadSceneMode mode) {
 			if (scene.name == "Menu") {
-				var mainMenuManager = GameObject.FindObjectOfType<MainMenuManager>();
-				if (mainMenuManager != null) {
-					var ui = mainMenuManager.gameObject.AddComponent<UI>();
-					ui.DrawUI = new UI.DrawUIEvent();
-					ui.DrawUI.AddListener(DrawModsInfo);
-				}
-				
-				new GameObject("ModList").AddComponent<ModList>();
+				var loadedModsInfo = new GameObject("LoadedModsInfo").AddComponent<LoadedModsInfo>();
+				loadedModsInfo.SetLoadedModsCount(LoadedModsCount);
 			}
 		}
-
-		private void DrawModsInfo() {
-			var style = new GUIStyle {
-				normal = {
-					textColor = Color.red
-				},
-				fontSize = 16
-			};
-			GUILayout.Label("Mod Loader v0.1a by Sauler", style, GUILayout.ExpandHeight(true), GUILayout.ExpandWidth(true));
-			style.fontSize = 13;
-			GUILayout.Label("Loaded mods: " + mods.Length, style, GUILayout.ExpandHeight(true), GUILayout.ExpandWidth(true));
-		}
+		
 	}
 }
